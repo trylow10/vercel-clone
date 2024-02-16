@@ -14,14 +14,23 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Add a route to handle the payload
 app.all("/", (req, res) => {
-  // Access payload data from request body
-  const payloadData = req.body;
+  const githubEvent = req.headers["x-github-event"];
 
-  // Do something with the payload data
-  console.log("Payload data:", payloadData);
-
-  // Send response
-  res.status(200).send("Payload received successfully.");
+  if (githubEvent === "issues") {
+    const data = req.body;
+    const action = data.action;
+    if (action === "opened") {
+      console.log(`An issue was opened with this title: ${data.issue.title}`);
+    } else if (action === "closed") {
+      console.log(`An issue was closed by ${data.issue.user.login}`);
+    } else {
+      console.log(`Unhandled action for the issue event: ${action}`);
+    }
+  } else if (githubEvent === "ping") {
+    console.log("GitHub sent the ping event");
+  } else {
+    console.log(`Unhandled event: ${githubEvent}`);
+  }
+  res.json({ githubEvent: githubEvent });
 });
-
 app.listen(PORT, () => console.log(`Server is running at ${PORT}`));
