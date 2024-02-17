@@ -6,11 +6,11 @@ RUN apt-get install -y nodejs
 #install git
 RUN apt-get install git -y
 #specifying the working 
-WORKDIR "/build/"
+WORKDIR "/home/trilo/"
 
 COPY tunnel.sh tunnel.sh
 
-ENTRYPOINT [ "/build/tunnel.sh" ]
+ENTRYPOINT [ "/home/trilo/tunnel.sh" ]
 
 
 
