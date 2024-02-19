@@ -14,9 +14,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.all("/", (req, res) => {
   const githubEvent = req.headers["x-github-event"];
-  const githubHookId = req.headers["x-github-hook-id"];
-  console.log("====", githubHookId);
-
   if (githubEvent === "push") {
     const data = req.body;
     const repository = data.repository.full_name;
