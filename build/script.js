@@ -1,31 +1,33 @@
 import dotenv from "dotenv";
 import express from "express";
 import bodyParser from "body-parser";
-const app = express();
-// import { ngrockInnit } from "./ngrok.js";
+import TelegramBot from "node-telegram-bot-api";
 
+const app = express();
 dotenv.config();
 const PORT = process.env.PORT || 3000;
+const TELEGRAM_TOKEN = process.env.TELEGRAM_API_TOKEN; // Your Telegram Bot API Token
+const bot = new TelegramBot(TELEGRAM_TOKEN);
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// const urlListner = await ngrockInnit();
-// console.log(`Ingress established at: ${urlListner.url()}`);
-
-// Add a route to handle the payload
 app.all("/", (req, res) => {
   const githubEvent = req.headers["x-github-event"];
+  const githubHookId = req.headers["x-github-hook-id"];
+  console.log("====", githubHookId);
 
-  if (githubEvent === "issues") {
+  if (githubEvent === "push") {
     const data = req.body;
-    const action = data.action;
-    if (action === "opened") {
-      console.log(`An issue was opened with this title: ${data.issue.title}`);
-    } else if (action === "closed") {
-      console.log(`An issue was closed by ${data.issue.user.login}`);
-    } else {
-      console.log(`Unhandled action for the issue event: ${action}`);
-    }
+    const repository = data.repository.full_name;
+    const commitId = data.after;
+    const branch = data.ref.replace("refs/heads/", "");
+    const action = "pushed"; // Assuming the action is always "pushed" for push events
+
+    const message = `Repository: ${repository}\nCommit ID: ${commitId}\nBranch: ${branch}\nAction: ${action}`;
+    sendTelegramMessage(message);
+
+    console.log("Push event received:", message);
   } else if (githubEvent === "ping") {
     console.log("GitHub sent the ping event");
   } else {
@@ -33,4 +35,15 @@ app.all("/", (req, res) => {
   }
   res.json({ githubEvent: githubEvent });
 });
+
+app.post("/notify-telegram", (req, res) => {
+  const message = req.body.message;
+  sendTelegramMessage(message);
+  res.json({ status: "Message sent to Telegram" });
+});
+
 app.listen(PORT, () => console.log(`Server is running at ${PORT}`));
+
+function sendTelegramMessage(message) {
+  bot.sendMessage(process.env.TELEGRAM_CHAT_ID, message);
+}
