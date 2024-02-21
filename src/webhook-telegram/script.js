@@ -7,8 +7,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 const TELEGRAM_TOKEN = process.env.TELEGRAM_API_TOKEN;
-const TELEGRAM_CHAT_ID =
-  process.env.TELEGRAM_CHAT_ID || "https://t.me/trylow_github_bot";
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 // Initialize Telegram bot
 const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
