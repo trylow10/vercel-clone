@@ -1,10 +1,16 @@
 import express from "express";
 import cors from "cors";
-
+import "dotenv/config";
+const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.listen(3000, () => {
-  console.log(`server is running`);
+app.post("/deploy", (req, res) => {
+  const repoUrl = req.body.gitUrl;
+  
+});
+
+app.listen(PORT, () => {
+  console.log(`server is running${PORT}`);
 });
