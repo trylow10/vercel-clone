@@ -1,11 +1,7 @@
 import path from "node:path";
 import fs from "node:fs";
-
-export let DIR_NAME;
-
-export const getAllFiles = async (repoUrl) => {
-  DIR_NAME = repoUrl.split("/").slice(-1)[0].replace(".git", "");
-
+import { DIR_NAME } from "./index.js";
+export const getAllFiles = async () => {
   const currentModuleDir = path.dirname(new URL(import.meta.url).pathname);
   const distPath = path.join(
     currentModuleDir,
@@ -29,7 +25,6 @@ function readDirectory(directory) {
     if (dirent.isDirectory()) {
       readDirectory(fullPath);
     } else {
-      // Do something with the file
       console.log(fullPath);
     }
   }

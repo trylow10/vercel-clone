@@ -3,18 +3,20 @@ import express from "express";
 import cors from "cors";
 import { innit } from "./executeScript.js";
 const PORT = process.env.PORT || 3001;
-import { DIR_NAME } from "./getItems.js";
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-app.post("/deploy", async (req, res) => {
-  repoUrl = req.body.GIT_URL;
+export let DIR_NAME;
+const handler = async(req,res) =>{
+  const repoUrl = req.body.GIT_URL;
   await innit(repoUrl);
-  res.json({
-    msg: `The repo named ${DIR_NAME}  is sucessfully cloned`,
-  });
-});
+  DIR_NAME = repoUrl.split("/").slice(-1)[0].replace(".git", "");
+res.json({
+  msg:DIR_NAME
+})
+
+}
+app.post("/deploy", handler)
 
 app.listen(PORT, () => {
   console.log(`server is running${PORT}`);
