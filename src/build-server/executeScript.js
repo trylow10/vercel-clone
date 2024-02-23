@@ -1,57 +1,42 @@
 import { exec } from "child_process";
-import path from "path";
-import { glob } from "glob";
-import { generate } from "./generateId.js";
+import path from "node:path";
+import { getAllFiles } from "./getItems.js";
 
-export const innit = (repoUrl) => {
-  const id = generate(); // asd12
-  const url = path.dirname(new URL(import.meta.url).pathname);
-  const scriptPath = path.join(url, "tunnel.sh");
-  const cloneProcess = exec(`bash ${scriptPath} ${repoUrl}`);
+export const innit = async (repoUrl) => {
+  // Get the current directory URL
+  const url = new URL(import.meta.url).pathname;
+  // Construct the script path
+  const scriptPath = path.join(url, "../../tunnel.sh");
 
-  cloneProcess.stdout?.on("data", (data) => {
+  // Execute the shell script
+  const process = exec(`bash ${scriptPath} ${repoUrl}`);
+
+  // Log stdout data
+  process.stdout?.on("data", (data) => {
     console.log(data.toString());
   });
 
-  cloneProcess.stderr?.on("data", (data) => {
+  // Log stderr data and handle accordingly
+  process.stderr?.on("data", (data) => {
     console.error(data.toString());
+    // Potential option: Send error to Kafka
   });
 
-  cloneProcess.on("error", (error) => {
+  // Handle errors during process execution
+  process.on("error", (error) => {
     console.error("Error cloning repository:", error);
     // Handle error if the cloning process fails
   });
 
-  cloneProcess.on("close", () => {
-    console.log("Repository cloned successfully.");
-
-    // Find all package.json files within the cloned repository directory
-    const packageJsonFiles = glob.sync(
-      `/home/trilo/output/${id}/**/package.json`
-    );
-
-    // Iterate over each package.json file and run npm install in its directory
-    packageJsonFiles.forEach((packageJsonFile) => {
-      const packageDir = path.dirname(packageJsonFile);
-      console.log(`Installing dependencies in ${packageDir}...`);
-      const installProcess = exec(`npm install`, { cwd: packageDir });
-
-      installProcess.stdout?.on("data", (data) => {
-        console.log(data.toString());
-      });
-
-      installProcess.stderr?.on("data", (data) => {
-        console.error(data.toString());
-      });
-
-      installProcess.on("error", (error) => {
-        console.error(`Error installing dependencies in ${packageDir}:`, error);
-        // Handle error if npm install fails
-      });
-
-      installProcess.on("close", () => {
-        console.log(`Dependencies installed successfully in ${packageDir}.`);
-      });
-    });
+  // After process completion, get all files
+  process.on("close", async () => {
+    try {
+      // Await the result of getAllFiles
+      const files = await getAllFiles(repoUrl);
+      console.log(files);
+    } catch (error) {
+      console.error("Error retrieving files:", error);
+      // Handle error in getting files
+    }
   });
 };

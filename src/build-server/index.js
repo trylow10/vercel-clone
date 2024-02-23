@@ -1,17 +1,18 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import "dotenv/config";
 import { innit } from "./executeScript.js";
 const PORT = process.env.PORT || 3001;
+import { DIR_NAME } from "./getItems.js";
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 app.post("/deploy", async (req, res) => {
-  const repoUrl = req.body.GIT_URL;
-  await innit(repoUrl); // Call `innit` function to execute script
+  repoUrl = req.body.GIT_URL;
+  await innit(repoUrl);
   res.json({
-    msg: "Script execution finish",
+    msg: `The repo named ${DIR_NAME}  is sucessfully cloned`,
   });
 });
 
