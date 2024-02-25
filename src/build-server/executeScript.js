@@ -25,7 +25,7 @@ export const innit = async (repoUrl) => {
   // After process completion, get all files
   process.on("close", async () => {
     try {
-      const files = await getAllFiles();
+      const files = await getAllFiles(repoUrl);
       console.log(files);
     } catch (error) {
       console.error("Error retrieving files:", error);
