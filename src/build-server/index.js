@@ -1,20 +1,31 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import "dotenv/config";
 import { innit } from "./executeScript.js";
 const PORT = process.env.PORT || 3001;
+
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.post("/deploy", async (req, res) => {
-  const repoUrl = req.body.GIT_URL;
-  await innit(repoUrl); // Call `innit` function to execute script
-  res.json({
-    msg: "Script execution finish",
-  });
-});
+export const getDirName = (repoUrl) => {
+  return repoUrl.split("/").slice(-1)[0].replace(".git", "");
+};
 
+const handler = async (req, res) => {
+  try {
+    const repoUrl = req.body.GIT_URL;
+    await innit(repoUrl);
+    const dirName = getDirName(repoUrl);
+    res.json({
+      msg: dirName,
+    });
+  } catch (error) {
+    console.error("Error handling request:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+app.post("/deploy", handler);
 app.listen(PORT, () => {
-  console.log(`server is running${PORT}`);
+  console.log(`Server is running at ${PORT}`);
 });
