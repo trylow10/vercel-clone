@@ -1,5 +1,35 @@
+# Ignore logs
 logs/
+
+# Ignore GitHub configuration
 .github/
+
+# Ignore Markdown files
 *.md
+
+# Ignore cache
 .cache
-build/node_modules/
+
+# Ignore build-server directory
+build-server/
+
+# Ignore node modules
+node_modules/
+
+# Ignore any .env files
+*.env
+
+# Ignore all .git files and directories
+.git*
+
+# Ignore all .DS_Store files (MacOS)
+**/.DS_Store
+
+# Ignore npm debug logs
+npm-debug.log*
+
+# Ignore yarn error logs
+yarn-error.log
+
+# Ignore yarn debug logs
+yarn-debug.log*
