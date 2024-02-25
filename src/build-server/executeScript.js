@@ -1,6 +1,7 @@
 import { exec } from "node:child_process";
 import path from "node:path";
 import { getAllFiles } from "./getItems.js";
+import { main } from "./awsService.js";
 
 export const innit = async (repoUrl) => {
   // Get the current directory URL
@@ -25,8 +26,9 @@ export const innit = async (repoUrl) => {
   // After process completion, get all files
   process.on("close", async () => {
     try {
-      const files = await getAllFiles(repoUrl);
-      console.log(files);
+      const toBeUploaded = await getAllFiles(repoUrl);
+      console.log(toBeUploaded);
+      const awsOperation = await main(toBeUploaded);
     } catch (error) {
       console.error("Error retrieving files:", error);
     }
