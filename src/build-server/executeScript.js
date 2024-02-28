@@ -27,8 +27,7 @@ export const innit = async (repoUrl) => {
   process.on("close", async () => {
     try {
       const toBeUploaded = await getAllFiles(repoUrl);
-      console.log(toBeUploaded);
-      const awsOperation = await main(toBeUploaded);
+      await main(toBeUploaded);
     } catch (error) {
       console.error("Error retrieving files:", error);
     }

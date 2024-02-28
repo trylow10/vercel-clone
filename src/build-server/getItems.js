@@ -14,13 +14,14 @@ export const getAllFiles = async (repoUrl) => {
     repositoryName,
     "dist"
   );
-
+  const finalPaths = [];
   try {
-    const files = glob.sync("**/*", { cwd: distDirectory, nodir: true });
-    const formattedFiles = files.map(
-      (filePath) => `${repositoryName}/dist/${filePath}`
-    );
-    return formattedFiles.join("\n");
+    const filePaths = glob.sync("**/*", { cwd: distDirectory, nodir: true });
+    for (const file of filePaths) {
+      const finalPath = path.join(distDirectory, file);
+      finalPaths.push({ relativePath: file, absolutePath: finalPath });
+    }
+    return finalPaths;
   } catch (error) {
     console.error("Error reading directory:", error);
   }
