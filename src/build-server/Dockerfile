@@ -4,12 +4,13 @@ RUN apt-get update && apt-get install -y \
     git \
     gnupg \
     && rm -rf /var/lib/apt/lists/*
-
 RUN curl -sL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs
+WORKDIR /home/trilo/vercel-clone/src/build-server
+COPY package*.json ./
+RUN npm install 
+#    to from 
+COPY . .
 
-WORKDIR /home/trilo/output
-
-# Copy tunnel.sh script from the build context to the working directory in the image
-COPY tunnel.sh .
-ENTRYPOINT ["/home/trilo/tunnel.sh"]
+RUN chmod +x tunnel.sh
+ENTRYPOINT ["./tunnel.sh"]
